@@ -92,15 +92,27 @@ class ElibriWatermarkingClient {
   private $token;
   private $secret;
   
-  //! Kontruktor obiektu API
+  //! @brief Kontruktor obiektu API
+  //! @param String $token - publiczny token eLibri Watermarking API
+  //! @param String $secret - prywatny token eLibri Watermarking API
   function __construct($token, $secret, $host=NULL) {
   
     $this->token = $token;
     $this->secret = $secret;
     if (isset($_host)) $this->host = $host;
   }
-
-  //! Zlecaj watermarkowanie. Dopóki nie zostanie metoda deliver, plik nie zostanie udostępniony
+  
+  //! @brief Zlecaj watermarkowanie.
+  //! Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy.
+  //! Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane)
+  //! eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje tranzakcji. Dopiero po dokonaniu
+  //! płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu.
+  
+  //! @param String $ident - ISBN13 (bez myślików), lub record_reference
+  //! @param String $formats - 'mobi', 'epub', lub 'mobi,epub'
+  //! @param String $visible_watermark - stopka doklejana na końcu każdego rozdziału
+  //! @param String $title_postfix - tekst doklejany do tytułu książki
+  //! @return $transid - alfanumeryczny identyfikator tranzakcji
   function watermark($ident, $formats, $visible_watermark, $title_postfix) {
     if (preg_match('/^[0-9]+$/', $ident)) { 
       $ident_type = 'isbn';
@@ -120,6 +132,11 @@ class ElibriWatermarkingClient {
     return $this->send_request($uri, $data);
   }
 
+  //! @brief Dostarcz plik oraz zajestruj tranzakcję
+  //! Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta.
+  //! Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu.
+  //! Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.
+  //! @param String $trans_id - alfanumeryczny identyfikator tranzakcji zwrócony przez metodę watermark
   function deliver($trans_id) {
     $uri = $this->host . '/deliver';
     $data = array('trans_id' => $trans_id);

@@ -1,0 +1,63 @@
+/*! \mainpage Biblioteka do obsługi API watermarkingu eLibri
+ *
+ * \section intro_sec Wprowadzenie
+ *
+ * <a href='https://www.elibri.com.pl'>eLibri</a> jest systemem stworzonym dla wydawnictw,
+ * które mogą za jego pośrednictwem sprzedawać swoje ebooki na swoich stronach internetowych,
+ * jak i na stronach współpracująch firm. 
+
+ * \section install_sec Instalacja
+ *
+ * Biblioteka jest dystrybuowana jako pakiet PEAR. Najpierw musisz zarejestrować kanał elibri: 
+ * \verbatim pear channel-discover elibri.com.pl/system/pear \endverbatim
+ *
+ * Następnie instalujesz pakiet poprzez:
+ * \verbatim  pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.1.0 \endverbatim
+ *
+ * Rozwój pakietu możesz śledzić na <a href='https://github.com/elibri/elibriWatermarkingPHP'>githubie</a>
+ *
+ * Jeśli używasz czytnika rss, to możesz zaabonować <a href='https://www.elibri.com.pl/system/pear/feed.xml'>ten kanał</a>.
+ *
+ * \section usage_sec Użycie biblioteki
+ * 
+ * Poprzez API zlecasz watermarking książki, podając jej identyfikator (ISBN lub 
+ * <a href='https://www.elibri.com.pl/doc/api/onix_record_identifiers'>record reference</a>), formaty (po przecinku, na ogół 'epub,mobi', 
+ * widoczny watermark, który jest umieszczony na końcu każdego rozdziału, oraz krótki tekst, który jest dołączany do tytułu książki.
+ *
+ * Zwatermarkowany plik jest umieszczany w buckecie na S3 amazonu, z którego zlecający powinien pobrać plik, a następnie go wykasować.
+ *
+ * Żeby używać API, proszę do nas napisać na adres kontakt@elibri.com.pl. Otrzymacie:
+ *  - publiczny i prywatny token do podpisywania zleceń watermarkingu
+ *  - publiczny i prywatny token pozwalający na odczytywanie i wykasowywanie plików z S3
+ *  - nazwę bucketu na S3, na którym będą umieszczane zwatermarkowane pliki.
+ * 
+ * Następnie niezbędne jest podpisanie umów z wydawnictwami, których pliki mają być sprzedawane z pośrednictwem systemu eLibri.
+ *
+ * API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: \b watermark i \b deliver.
+ *
+ * \subsection watermark
+ * Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku.
+ * Wysłanie zlecenia watermarkingu nie rejestruje tranzakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk,
+ * i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver. 
+ *
+ * \subsection deliver
+ * Deliver skutkuje zarejestrowaniem tranzakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3.
+ * Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną tranzakcję.
+
+ * Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności.
+ * W takiej sytuacji tranzakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona.
+ * Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.
+ *
+ * \section Przykłady
+ *
+ * \subsection example1 Przykład 1
+ *
+ * W poniższym przykładzie zlecasz watermarkowanie i dostarczenie pliku na S3.
+ *
+ * \include watermarking_example.php
+ *
+ * \subsection example2 Przykład 2
+ * Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer tranzakcji plus odpowiednie rozszerzenie
+ *
+ * \include s3_example.php
+ */

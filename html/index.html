@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>Moduł&nbsp;PHP&nbsp;dla&nbsp;API&nbsp;Watermarkingu&nbsp;elibri: Biblioteka do obsługi API watermarkingu eLibri</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="stylesheet.css" rel="stylesheet" type="text/css" />
+
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">Moduł&nbsp;PHP&nbsp;dla&nbsp;API&nbsp;Watermarkingu&nbsp;elibri
+   
+   </div>
+   <div id="projectbrief">Biblioteka&nbsp;abstrahująca&nbsp;dostęp&nbsp;do&nbsp;API&nbsp;eLibri</div>
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Wygenerowano przez Doxygen 1.7.4 -->
+<script type="text/javascript"><!--
+var searchBox = new SearchBox("searchBox", "search",false,'Szukaj');
+--></script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li class="current"><a href="index.html"><span>Strona&#160;główna</span></a></li>
+      <li><a href="modules.html"><span>Moduły</span></a></li>
+      <li><a href="annotated.html"><span>Klasy</span></a></li>
+      <li id="searchli">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Szukaj" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">Biblioteka do obsługi API watermarkingu eLibri </div>  </div>
+</div>
+<div class="contents">
+<div class="textblock"><h2><a class="anchor" id="intro_sec"></a>
+Wprowadzenie</h2>
+<p><a href="https://www.elibri.com.pl">eLibri</a> jest systemem stworzonym dla wydawnictw, które mogą za jego pośrednictwem sprzedawać swoje ebooki na swoich stronach internetowych, jak i na stronach współpracująch firm.</p>
+<h2><a class="anchor" id="install_sec"></a>
+Instalacja</h2>
+<p>Biblioteka jest dystrybuowana jako pakiet PEAR. Najpierw musisz zarejestrować kanał elibri: </p>
+<div class="fragment"><pre class="fragment">pear channel-discover elibri.com.pl/system/pear </pre></div><p>Następnie instalujesz pakiet poprzez: </p>
+<div class="fragment"><pre class="fragment">pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.1.0 </pre></div><p>Rozwój pakietu możesz śledzić na <a href="https://github.com/elibri/elibriWatermarkingPHP">githubie</a></p>
+<p>Jeśli używasz czytnika rss, to możesz zaabonować <a href="https://www.elibri.com.pl/system/pear/feed.xml">ten kanał</a>.</p>
+<h2><a class="anchor" id="usage_sec"></a>
+Użycie biblioteki</h2>
+<p>Poprzez API zlecasz watermarking książki, podając jej identyfikator (ISBN lub <a href="https://www.elibri.com.pl/doc/api/onix_record_identifiers">record reference</a>), formaty (po przecinku, na ogół 'epub,mobi', widoczny watermark, który jest umieszczony na końcu każdego rozdziału, oraz krótki tekst, który jest dołączany do tytułu książki.</p>
+<p>Zwatermarkowany plik jest umieszczany w buckecie na S3 amazonu, z którego zlecający powinien pobrać plik, a następnie go wykasować.</p>
+<p>Żeby używać API, proszę do nas napisać na adres <a href="mailto:kontakt@elibri.com.pl">kontakt@elibri.com.pl</a>. Otrzymacie:</p>
+<ul>
+<li>publiczny i prywatny token do podpisywania zleceń watermarkingu</li>
+<li>publiczny i prywatny token pozwalający na odczytywanie i wykasowywanie plików z S3</li>
+<li>nazwę bucketu na S3, na którym będą umieszczane zwatermarkowane pliki.</li>
+</ul>
+<p>Następnie niezbędne jest podpisanie umów z wydawnictwami, których pliki mają być sprzedawane z pośrednictwem systemu eLibri.</p>
+<p>API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: <b>watermark</b> i <b>deliver</b>.</p>
+<h3><a class="anchor" id="watermark"></a>
+watermark</h3>
+<p>Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku. Wysłanie zlecenia watermarkingu nie rejestruje tranzakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk, i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver.</p>
+<h3><a class="anchor" id="deliver"></a>
+deliver</h3>
+<p>Deliver skutkuje zarejestrowaniem tranzakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3. Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną tranzakcję.</p>
+<p>Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności. W takiej sytuacji tranzakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona. Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.</p>
+<h2><a class="anchor" id="Przykłady"></a>
+Przykłady</h2>
+<h3><a class="anchor" id="example1"></a>
+Przykład 1</h3>
+<p>W poniższym przykładzie zlecasz watermarkowanie i dostarczenie pliku na S3.</p>
+<div class="fragment"><pre class="fragment">&lt;?php
+
+
+$book_rr = <span class="stringliteral">&quot;&lt;podaj record reference książki&gt;&quot;</span>;
+
+<span class="comment">//dostępy do API eLibri</span>
+$key = <span class="stringliteral">&quot;&lt;podaj publiczny klucz elibri&gt;&quot;</span>;
+$secret = <span class="stringliteral">&quot;&lt;podaj tajny klucz elibri&gt;&quot;</span>;
+
+require_once(dirname(__FILE__) . <span class="stringliteral">&#39;/elibriWatermarkingPHP.php&#39;</span>);
+
+$client = <span class="keyword">new</span> <a class="code" href="classElibriWatermarkingClient.html" title="ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.">ElibriWatermarkingClient</a>($key, $secret);
+
+<span class="comment">//zleć watermarkowanie</span>
+$transid = $client-&gt;watermark($book_rr, <span class="stringliteral">&quot;mobi,epub&quot;</span>, <span class="stringliteral">&quot;Książka dla Wojtka Kowalskiego&quot;</span>, <span class="stringliteral">&quot;Wojtek Kowalski&quot;</span>); 
+print <span class="stringliteral">&quot;transid: $transid\n&quot;</span>;
+
+<span class="comment">//potwierdzaj tranzakcję oraz dostarcz plik do bucketu S3 przypisanego odbiorcy</span>
+print $client-&gt;deliver($transid);
+
+<span class="comment">//czekaj na callback od elibri na zdefiniowany adres,</span>
+<span class="comment">//a wtedy ściągnij plik, wykasuj go z S3 i udostęnij go klientowi</span>
+
+?&gt;
+</pre></div><h3><a class="anchor" id="example2"></a>
+Przykład 2</h3>
+<p>Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer tranzakcji plus odpowiednie rozszerzenie</p>
+<div class="fragment"><pre class="fragment">&lt;?php
+
+
+$transid = <span class="stringliteral">&quot;&lt;podaj numer tranzakcji&gt;&quot;</span>;
+$key = <span class="stringliteral">&quot;&lt;publiczny klucz do bucketu S3&gt;&quot;</span>;
+$secret = <span class="stringliteral">&quot;&lt;prywatny klucz do bucketu S3&gt;&quot;</span>;
+$bucket = <span class="stringliteral">&quot;&lt;nazwa bucketu na S3&gt;&quot;</span>;
+$destination = <span class="stringliteral">&quot;&lt;nazwa katalogu w którym zostanie nagrany plik&gt;&quot;</span>;
+
+<span class="comment">//http://aws.amazon.com/sdkforphp/ or http://pear.amazonwebservices.com/</span>
+<span class="comment">//DOC: http://docs.amazonwebservices.com/AWSSDKforPHP/latest/index.html#i=AmazonS3</span>
+require_once <span class="stringliteral">&#39;AWSSDKforPHP/sdk.class.php&#39;</span>;
+
+CFCredentials::set(array(
+  <span class="stringliteral">&#39;development&#39;</span> =&gt; array(
+    <span class="stringliteral">&#39;key&#39;</span> =&gt; $key,
+    <span class="stringliteral">&#39;secret&#39;</span> =&gt; $secret,
+    <span class="stringliteral">&#39;default_cache_config&#39;</span> =&gt; <span class="stringliteral">&#39;&#39;</span>,
+    <span class="stringliteral">&#39;certificate_authority&#39;</span> =&gt; <span class="keyword">false</span>
+   ),
+   <span class="comment">// Specify a default credential set to use if there are more than one.</span>
+  <span class="stringliteral">&#39;@default&#39;</span> =&gt; <span class="stringliteral">&#39;development&#39;</span>
+));
+
+$keyname = $transid . <span class="stringliteral">&quot;.mobi&quot;</span>;
+$filepath = <span class="stringliteral">&quot;$destination/$keyname&quot;</span>;
+
+<span class="comment">//initializuj obiekt odpowiedzialny za komunikację z amazonem</span>
+$s3 = <span class="keyword">new</span> AmazonS3();
+
+<span class="comment">//ściągaj plik </span>
+$response = $s3-&gt;get_object(
+                    $bucket,
+                    $keyname,
+                    array(<span class="stringliteral">&#39;fileDownload&#39;</span>=&gt; $filepath));
+print $response-&gt;isOK() . <span class="stringliteral">&quot;\n&quot;</span>;
+
+<span class="comment">//wykasuj go z S3</span>
+$reponse = $s3-&gt;delete_object($bucket, $keyname);
+print $response-&gt;isOK() . <span class="stringliteral">&quot;\n&quot;</span>;
+
+
+?&gt;
+</pre></div> </div></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Klasy</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Funkcje</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+
+
+<hr class="footer"/><address class="footer"><small>
+Wygenerowano dla Moduł&nbsp;PHP&nbsp;dla&nbsp;API&nbsp;Watermarkingu&nbsp;elibri programem&#160;<a href="http://www.doxygen.org/index.html">1.7.4</a></small></address>
+
+</body>
+</html>
