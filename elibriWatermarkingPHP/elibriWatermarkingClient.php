@@ -46,10 +46,9 @@ class ElibriServerErrorException extends Exception {
 }
 
 
-//! @brief Wyjątek po stronie serwera (Internal server error)
+//! @brief Wyjątek po stronie serwera (Forbidden)
 //! @ingroup exceptions
 class ElibriForbiddenException extends Exception {
-
   function __construct() {
     parent::__construct("Forbidden", 403);
   }
@@ -62,7 +61,7 @@ class ElibriForbiddenException extends Exception {
 class ElibriWrongFormatsException extends Exception {
   
   function __construct() {
-    parent::__construct("Błędnie podany format", 1000);
+    parent::__construct("Wrong Format, allowed: 'epub', 'mobi', 'epub,mobi'", 1000);
   }
 }
 
@@ -71,16 +70,16 @@ class ElibriWrongFormatsException extends Exception {
 class ElibriNotFoundException extends Exception {
 
   function __construct() {
-    parent::__construct("Invalid Login or Password", 1000);
+    parent::__construct("Invalid url or http method", 404);
   }
 }
 
-//! @brief Wyjątek - Nieprawidłowy login lub hasło
+//! @brief Wyjątek - nieznany błąd
 //! @ingroup exceptions
 class ElibriUnknownException extends Exception {
 
   function __construct() {
-    parent::__construct("Invalid Login or Password", 1000);
+    parent::__construct("Unknow error", 1000);
   }
 }
 
@@ -129,7 +128,7 @@ class ElibriWatermarkingClient {
     $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark,
                   'title_postfix' => $title_postfix);
 
-    return $this->send_request($uri, $data);
+    return $this->send_request($uri, $data, TRUE);
   }
 
   //! @brief Dostarcz plik oraz zajestruj tranzakcję
@@ -140,23 +139,39 @@ class ElibriWatermarkingClient {
   function deliver($trans_id) {
     $uri = $this->host . '/deliver';
     $data = array('trans_id' => $trans_id);
-    return $this->send_request($uri, $data);
+    return $this->send_request($uri, $data, TRUE);
   }
 
-  private function send_request($uri, $data) {
+  //! @brief Pobierz listę dostępnych plików
+  //! Za pomocą tej metody możesz pobrać listę książek, które są lub będą w najbliższym czasie dostępne w systemie eLibri
+  function available_files() {
+    $uri = $this->host . '/available_files.json';
+    $json = $this->send_request($uri, array(), FALSE);
+    return json_decode($json, TRUE);
+  }
+
+  private function send_request($uri, $data, $do_post) {
     $stamp = time(); 
     $sig = rawurlencode(base64_encode(hash_hmac("sha1", $this->secret, $stamp, true)));
     $data['stamp'] = $stamp;
     $data['sig'] = $sig;
     $data['token'] = $this->token;
 
+    if (!$do_post) {
+      $uri = $uri . "?" . http_build_query($data);
+    }
     $ch = curl_init($uri);
+
+    //enable - to see debugging messages
+    //curl_setopt($ch, CURLOPT_VERBOSE, TRUE); 
+
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-
+    if ($do_post) {
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    }
     $curlResult = curl_exec($ch);
     return $this->validate_response($curlResult, $ch);
   }

@@ -12,7 +12,7 @@
  * \verbatim pear channel-discover elibri.com.pl/system/pear \endverbatim
  *
  * Następnie instalujesz pakiet poprzez:
- * \verbatim  pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.1.0 \endverbatim
+ * \verbatim  pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.1.1 \endverbatim
  *
  * Rozwój pakietu możesz śledzić na <a href='https://github.com/elibri/elibriWatermarkingPHP'>githubie</a>
  *
@@ -33,7 +33,7 @@
  * 
  * Następnie niezbędne jest podpisanie umów z wydawnictwami, których pliki mają być sprzedawane z pośrednictwem systemu eLibri.
  *
- * API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: \b watermark i \b deliver.
+ * API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: \b watermark i \b deliver. Metody te są oferowane przez klasę ElibriWatermarkingClient
  *
  * \subsection watermark
  * Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku.
@@ -48,6 +48,12 @@
  * W takiej sytuacji tranzakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona.
  * Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.
  *
+ * \section Lista dostępnych produktów
+ * Można również pobrać listę dostępnych plików dla założenego klienta (uzwględnia ona przypisanych wydawców, oraz daty premier)
+ * Uwzględnia on również książki, dla których są wgrane wszystkie pliki, ale nie nastąpiła jeszcze jej premiera (wtedy ustawione jest pole available_date)
+ * Służy do tego metoda ElibriWatermarkingClient#available_files
+ *
+
  * \section Przykłady
  *
  * \subsection example1 Przykład 1
