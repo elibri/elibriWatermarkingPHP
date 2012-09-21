@@ -106,6 +106,8 @@ class ElibriWatermarkingClient {
   //! Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane)
   //! eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje tranzakcji. Dopiero po dokonaniu
   //! płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu.
+  //! Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), 
+  //! przekazując w parametrze trans_id identyfikator tranzakcji, która została ukończona. 
   
   //! @param String $ident - ISBN13 (bez myślików), lub record_reference
   //! @param String $formats - 'mobi', 'epub', lub 'mobi,epub'
