@@ -48,7 +48,10 @@
  * W takiej sytuacji tranzakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona.
  * Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.
  *
- * \section Lista dostępnych produktów
+ * Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id 
+ * identyfikator tranzakcji, która została ukończona. 
+ *
+ * \section av_files Lista dostępnych produktów
  * Można również pobrać listę dostępnych plików dla założenego klienta (uzwględnia ona przypisanych wydawców, oraz daty premier)
  * Uwzględnia on również książki, dla których są wgrane wszystkie pliki, ale nie nastąpiła jeszcze jej premiera (wtedy ustawione jest pole available_date)
  * Służy do tego metoda ElibriWatermarkingClient#available_files
