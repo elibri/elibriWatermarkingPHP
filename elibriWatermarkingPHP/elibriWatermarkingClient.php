@@ -54,6 +54,13 @@ class ElibriForbiddenException extends Exception {
   }
 }
 
+//! @brief Wyjątek po stronie serwera (Request Expired) - źle ustawiony czas lokalnie
+//! @ingroup exceptions
+class ElibriRequestExpiredException extends Exception {
+  function __construct() {
+    parent::__construct("Request Expired", 408);
+  }
+}
 
 
 //! @brief Wyjątek - Nieprawidłowy login lub hasło
@@ -186,6 +193,8 @@ class ElibriWatermarkingClient {
     $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($response_code == 404) {
       throw new ElibriNotFoundException();
+    } else if ($response_code == 408) {
+      throw new ElibriRequestExpiredException();
     } else if ($response_code == 400) {
       throw new ElibriParametersError();
     } else if ($response_code == 403) {
