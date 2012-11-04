@@ -80,8 +80,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Szukaj');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Metody publiczne</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#aa5e8380c5ce6d2d541155463a5ad533c">__construct</a> ($token, $secret, $host=NULL)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kontruktor obiektu API.  <a href="#aa5e8380c5ce6d2d541155463a5ad533c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a46a437002cbb589bdc9be2195081e1ca">__construct</a> ($token, $secret)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kontruktor obiektu API.  <a href="#a46a437002cbb589bdc9be2195081e1ca"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a701b3d3bb03b7520fa8636d42ec7d179">watermark</a> ($ident, $formats, $visible_watermark, $title_postfix)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje tranzakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu. Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator tranzakcji, która została ukończona.  <a href="#a701b3d3bb03b7520fa8636d42ec7d179"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a71b2829ff44480bf0bcb368832cd903c">deliver</a> ($trans_id)</td></tr>
@@ -89,11 +89,18 @@ Metody publiczne</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9a6022fe6ac97609d6726248da806bb"></a><!-- doxytag: member="ElibriWatermarkingClient::available_files" ref="af9a6022fe6ac97609d6726248da806bb" args="()" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#af9a6022fe6ac97609d6726248da806bb">available_files</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Pobierz listę dostępnych plików Za pomocą tej metody możesz pobrać listę książek, które są lub będą w najbliższym czasie dostępne w systemie eLibri. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30683d237fbf5ec5381871c83682d121"></a><!-- doxytag: member="ElibriWatermarkingClient::soon_available_files" ref="a30683d237fbf5ec5381871c83682d121" args="()" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a30683d237fbf5ec5381871c83682d121">soon_available_files</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Ponierz listę plików, których premiera się zbliża Za pomocą tej metody możesz pobrać listę ksiażek, które nie są w tej chwili dostępne, ale ich premiera jest wkrótce. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a74ee467f384e4254b7f6ebcd7e0b17d7">check_suppliers</a> ($ident)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Pobierz listę możliwych dostawców pliku. Pobiera listę możliwych dostawców pliku. Ma to znaczenie tylko w przypadku książek, które mogą zostać zafakturowane zarówno na konto dystrybutora, jak i wydawcy.  <a href="#a74ee467f384e4254b7f6ebcd7e0b17d7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#aa2ba99c2b2fc47181373678ac31a4077">get_supplier</a> ($id)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Pobierz nazwę dostawcy Pobiera nazwę dostawcy o określonym id (zwracanym przez check_suppliers)  <a href="#aa2ba99c2b2fc47181373678ac31a4077"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Opis szczegółowy</h2>
 <div class="textblock"><p>ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri. </p>
 </div><hr/><h2>Dokumentacja konstruktora i destruktora</h2>
-<a class="anchor" id="aa5e8380c5ce6d2d541155463a5ad533c"></a><!-- doxytag: member="ElibriWatermarkingClient::__construct" ref="aa5e8380c5ce6d2d541155463a5ad533c" args="($token, $secret, $host=NULL)" -->
+<a class="anchor" id="a46a437002cbb589bdc9be2195081e1ca"></a><!-- doxytag: member="ElibriWatermarkingClient::__construct" ref="a46a437002cbb589bdc9be2195081e1ca" args="($token, $secret)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -107,13 +114,7 @@ Metody publiczne</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">$&#160;</td>
-          <td class="paramname"><em>secret</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">$&#160;</td>
-          <td class="paramname"><em>host</em> = <code>NULL</code>&#160;</td>
+          <td class="paramname"><em>secret</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -136,6 +137,31 @@ Metody publiczne</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Dokumentacja funkcji składowych</h2>
+<a class="anchor" id="a74ee467f384e4254b7f6ebcd7e0b17d7"></a><!-- doxytag: member="ElibriWatermarkingClient::check_suppliers" ref="a74ee467f384e4254b7f6ebcd7e0b17d7" args="($ident)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ElibriWatermarkingClient::check_suppliers </td>
+          <td>(</td>
+          <td class="paramtype">$&#160;</td>
+          <td class="paramname"><em>ident</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Pobierz listę możliwych dostawców pliku. Pobiera listę możliwych dostawców pliku. Ma to znaczenie tylko w przypadku książek, które mogą zostać zafakturowane zarówno na konto dystrybutora, jak i wydawcy. </p>
+<dl><dt><b>Parametry:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramtype">String</td><td class="paramname">$ident</td><td>- identyfikator produktu (record_reference albo isbn bez kresek) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a71b2829ff44480bf0bcb368832cd903c"></a><!-- doxytag: member="ElibriWatermarkingClient::deliver" ref="a71b2829ff44480bf0bcb368832cd903c" args="($trans_id)" -->
 <div class="memitem">
 <div class="memproto">
@@ -155,6 +181,31 @@ Metody publiczne</h2></td></tr>
 <dl><dt><b>Parametry:</b></dt><dd>
   <table class="params">
     <tr><td class="paramtype">String</td><td class="paramname">$trans_id</td><td>- alfanumeryczny identyfikator tranzakcji zwrócony przez metodę watermark </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aa2ba99c2b2fc47181373678ac31a4077"></a><!-- doxytag: member="ElibriWatermarkingClient::get_supplier" ref="aa2ba99c2b2fc47181373678ac31a4077" args="($id)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ElibriWatermarkingClient::get_supplier </td>
+          <td>(</td>
+          <td class="paramtype">$&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Pobierz nazwę dostawcy Pobiera nazwę dostawcy o określonym id (zwracanym przez check_suppliers) </p>
+<dl><dt><b>Parametry:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$id</td><td>- numeryczny identyfikator dostawcy </td></tr>
   </table>
   </dd>
 </dl>
