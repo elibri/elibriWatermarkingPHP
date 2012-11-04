@@ -19,8 +19,8 @@ class ElibriAPIConnectionException extends Exception {
 //! @ingroup exceptions
 class ElibriParametersError extends Exception {
   
-  function __construct() {
-    parent::__construct("Bad Parameters", 400);
+  function __construct($msg) {
+    parent::__construct($msg, 400);
   
   }
 }
@@ -49,8 +49,8 @@ class ElibriServerErrorException extends Exception {
 //! @brief Wyjątek po stronie serwera (Forbidden)
 //! @ingroup exceptions
 class ElibriForbiddenException extends Exception {
-  function __construct() {
-    parent::__construct("Forbidden", 403);
+  function __construct($msg) {
+    parent::__construct($msg, 403);
   }
 }
 
@@ -90,22 +90,29 @@ class ElibriUnknownException extends Exception {
   }
 }
 
+//! @brief Wyjątek - żaden serwer nie odpowiada
+//! @ingroup exceptions
+class ElibriNoServerResponsingException extends Exception {
+
+  function __construct() {
+    parent::__construct("No server responsing", 1001);
+  }
+}
+
 
 //! @brief ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri
 class ElibriWatermarkingClient {
 
-  private $host = 'https://www.elibri.com.pl/watermarking';
   private $token;
   private $secret;
   
   //! @brief Kontruktor obiektu API
   //! @param String $token - publiczny token eLibri Watermarking API
   //! @param String $secret - prywatny token eLibri Watermarking API
-  function __construct($token, $secret, $host=NULL) {
+  function __construct($token, $secret) {
   
     $this->token = $token;
     $this->secret = $secret;
-    if (isset($_host)) $this->host = $host;
   }
   
   //! @brief Zlecaj watermarkowanie.
@@ -132,12 +139,10 @@ class ElibriWatermarkingClient {
       throw new ElibriWrongFormatsException();
     }
 
-    $uri = $this->host . '/watermark';
- 
     $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark,
                   'title_postfix' => $title_postfix);
 
-    return $this->send_request($uri, $data, TRUE);
+    return $this->send_request('watermark', $data, TRUE);
   }
 
   //! @brief Dostarcz plik oraz zajestruj tranzakcję
@@ -146,43 +151,85 @@ class ElibriWatermarkingClient {
   //! Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.
   //! @param String $trans_id - alfanumeryczny identyfikator tranzakcji zwrócony przez metodę watermark
   function deliver($trans_id) {
-    $uri = $this->host . '/deliver';
     $data = array('trans_id' => $trans_id);
-    return $this->send_request($uri, $data, TRUE);
+    return $this->send_request('deliver', $data, TRUE);
   }
 
   //! @brief Pobierz listę dostępnych plików
   //! Za pomocą tej metody możesz pobrać listę książek, które są lub będą w najbliższym czasie dostępne w systemie eLibri
   function available_files() {
-    $uri = $this->host . '/available_files.json';
-    $json = $this->send_request($uri, array(), FALSE);
-    return json_decode($json, TRUE);
+    return json_decode($this->send_request('available_files.json', array(), FALSE), TRUE);
   }
 
-  private function send_request($uri, $data, $do_post) {
+  //! @brief Ponierz listę plików, których premiera się zbliża
+  //! Za pomocą tej metody możesz pobrać listę ksiażek, które nie są w tej chwili dostępne, ale ich premiera  jest wkrótce
+  function soon_available_files() {
+    return json_decode($this->send_request('soon_available_files.json', array(), FALSE), TRUE);
+  }
+
+  //! @brief Pobierz listę możliwych dostawców pliku. 
+  //! Pobiera listę możliwych dostawców pliku. Ma to znaczenie tylko w przypadku książek, które mogą 
+  //! zostać zafakturowane zarówno na konto dystrybutora, jak i wydawcy.
+  //! @param String $ident - identyfikator produktu (record_reference albo isbn bez kresek)
+  function check_suppliers($ident) {
+    if (preg_match('/^[0-9]+$/', $ident)) {
+      $ident_type = 'isbn';
+    } else {
+      $ident_type = 'record_reference';
+    }
+    $data = array($ident_type => $ident);
+    return explode(",", $this->send_request('check_suppliers', $data, FALSE));
+  }
+
+  //! @brief Pobierz nazwę dostawcy
+  //! Pobiera nazwę dostawcy o określonym id (zwracanym przez check_suppliers)
+  //! @param $id - numeryczny identyfikator dostawcy
+  function get_supplier($id) {
+    $data = array('id' => $id);
+    return $this->send_request('get_supplier', $data, FALSE);
+  }
+
+  private function send_request($method_name, $data, $do_post) {
     $stamp = time(); 
     $sig = rawurlencode(base64_encode(hash_hmac("sha1", $this->secret, $stamp, true)));
     $data['stamp'] = $stamp;
     $data['sig'] = $sig;
     $data['token'] = $this->token;
 
-    if (!$do_post) {
-      $uri = $uri . "?" . http_build_query($data);
-    }
-    $ch = curl_init($uri);
+    //get the server list
+    $txts = dns_get_record("transactional-servers.elibri.com.pl", DNS_TXT);
+    $subdomains = array_map("trim", explode(",", $txts[0]["txt"]));
+    shuffle($subdomains); //randomize the order
+    foreach ($subdomains as $subdomain) {
+      $uri = "https://$subdomain.elibri.com.pl/watermarking/$method_name";
+      if (!$do_post) {
+        $uri = $uri . "?" . http_build_query($data);
+      }
 
-    //enable - to see debugging messages
-    //curl_setopt($ch, CURLOPT_VERBOSE, TRUE); 
+      $ch = curl_init($uri);
 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    if ($do_post) {
-      curl_setopt($ch, CURLOPT_POST, 1);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+      //enable - to see debugging messages
+      //curl_setopt($ch, CURLOPT_VERBOSE, TRUE); 
+
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+      if ($do_post) {
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+      }
+      $curlResult = curl_exec($ch);
+      try {
+        return $this->validate_response($curlResult, $ch); 
+      } catch (ElibriServerErrorException $e) {
+        //silency ignore this error
+      } catch (ElibriUnknownException $e) {
+        //silency ignore this error
+      } catch (ElibriAPIConnectionException $e) {
+        //silency ignore this error
+      }
     }
-    $curlResult = curl_exec($ch);
-    return $this->validate_response($curlResult, $ch);
+    throw new ElibriNoServerResponsingException();
   }
 
   private function validate_response($curlResult, $ch) {
@@ -196,9 +243,9 @@ class ElibriWatermarkingClient {
     } else if ($response_code == 408) {
       throw new ElibriRequestExpiredException();
     } else if ($response_code == 400) {
-      throw new ElibriParametersError();
+      throw new ElibriParametersError($curlResult);
     } else if ($response_code == 403) {
-      throw new ElibriForbiddenException();
+      throw new ElibriForbiddenException($curlResult);
     } else if ($response_code == 500) {
       throw new ElibriServerErrorException();
     } else if ($response_code == 401) {
