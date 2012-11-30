@@ -77,7 +77,7 @@ Wprowadzenie</h2>
 Instalacja</h2>
 <p>Biblioteka jest dystrybuowana jako pakiet PEAR. Najpierw musisz zarejestrować kanał elibri: </p>
 <div class="fragment"><pre class="fragment">pear channel-discover elibri.com.pl/system/pear </pre></div><p>Następnie instalujesz pakiet poprzez: </p>
-<div class="fragment"><pre class="fragment">pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.0 </pre></div><p>Rozwój pakietu możesz śledzić na <a href="https://github.com/elibri/elibriWatermarkingPHP">githubie</a></p>
+<div class="fragment"><pre class="fragment">pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.1 </pre></div><p>Rozwój pakietu możesz śledzić na <a href="https://github.com/elibri/elibriWatermarkingPHP">githubie</a></p>
 <p>Jeśli używasz czytnika rss, to możesz zaabonować <a href="https://www.elibri.com.pl/system/pear/feed.xml">ten kanał</a>.</p>
 <h2><a class="anchor" id="usage_sec"></a>
 Użycie biblioteki</h2>
@@ -93,12 +93,12 @@ Użycie biblioteki</h2>
 <p>API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: <b>watermark</b> i <b>deliver</b>. Metody te są oferowane przez klasę <a class="el" href="classElibriWatermarkingClient.html" title="ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.">ElibriWatermarkingClient</a></p>
 <h3><a class="anchor" id="watermark"></a>
 watermark</h3>
-<p>Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku. Wysłanie zlecenia watermarkingu nie rejestruje tranzakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk, i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver.</p>
+<p>Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku. Wysłanie zlecenia watermarkingu nie rejestruje transakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk, i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver.</p>
 <h3><a class="anchor" id="deliver"></a>
 deliver</h3>
-<p>Deliver skutkuje zarejestrowaniem tranzakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3. Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną tranzakcję.</p>
-<p>Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności. W takiej sytuacji tranzakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona. Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.</p>
-<p>Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator tranzakcji, która została ukończona.</p>
+<p>Deliver skutkuje zarejestrowaniem transakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3. Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną transakcję.</p>
+<p>Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności. W takiej sytuacji transakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona. Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.</p>
+<p>Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator transakcji, która została ukończona.</p>
 <h2><a class="anchor" id="av_files"></a>
 Lista dostępnych produktów</h2>
 <p>Można również pobrać listę dostępnych plików dla założenego klienta (uzwględnia ona przypisanych wydawców, oraz daty premier) Uwzględnia on również książki, dla których są wgrane wszystkie pliki, ale nie nastąpiła jeszcze jej premiera (wtedy ustawione jest pole available_date) Służy do tego metoda <a class="el" href="classElibriWatermarkingClient.html#af9a6022fe6ac97609d6726248da806bb" title="Pobierz listę dostępnych plików Za pomocą tej metody możesz pobrać listę książek, które są lub będą w...">ElibriWatermarkingClient::available_files</a></p>
@@ -133,7 +133,7 @@ print $client-&gt;deliver($transid);
 ?&gt;
 </pre></div><h3><a class="anchor" id="example2"></a>
 Przykład 2</h3>
-<p>Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer tranzakcji plus odpowiednie rozszerzenie</p>
+<p>Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer transakcji plus odpowiednie rozszerzenie</p>
 <div class="fragment"><pre class="fragment">&lt;?php
 
 

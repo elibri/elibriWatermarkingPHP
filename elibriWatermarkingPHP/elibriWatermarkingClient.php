@@ -118,38 +118,48 @@ class ElibriWatermarkingClient {
   //! @brief Zlecaj watermarkowanie.
   //! Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy.
   //! Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane)
-  //! eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje tranzakcji. Dopiero po dokonaniu
+  //! eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu
   //! płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu.
   //! Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), 
-  //! przekazując w parametrze trans_id identyfikator tranzakcji, która została ukończona. 
+  //! przekazując w parametrze trans_id identyfikator transakcji, która została ukończona. 
   
   //! @param String $ident - ISBN13 (bez myślików), lub record_reference
   //! @param String $formats - 'mobi', 'epub', lub 'mobi,epub'
   //! @param String $visible_watermark - stopka doklejana na końcu każdego rozdziału
   //! @param String $title_postfix - tekst doklejany do tytułu książki
-  //! @return $transid - alfanumeryczny identyfikator tranzakcji
-  function watermark($ident, $formats, $visible_watermark, $title_postfix) {
+  //! @param String $customer_ip - numer IP klienta, używany w celach wyłącznie statystycznych
+  //! @param String $client_symbol - opcjonalny identyfikator promocji
+  //! @return $transid - alfanumeryczny identyfikator transakcji
+  function watermark($ident, $formats, $visible_watermark, $title_postfix, $customer_ip = NULL, $client_symbol = NULL) {
     if (preg_match('/^[0-9]+$/', $ident)) { 
       $ident_type = 'isbn';
     } else {
       $ident_type = 'record_reference';
     }
 
-    if (!preg_match('/^(epub|mobi|,)+$/', $formats)) {
+    if (!preg_match('/^(epub|mobi|pdf|,)+$/', $formats)) {
       throw new ElibriWrongFormatsException();
     }
 
     $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark,
                   'title_postfix' => $title_postfix);
 
+    if ($customer_ip) {
+      $data['customer_ip'] = $customer_ip;
+    } 
+
+    if ($client_symbol) {
+      $data['client_symbol'] = $client_symbol;
+    }
+
     return $this->send_request('watermark', $data, TRUE);
   }
 
-  //! @brief Dostarcz plik oraz zajestruj tranzakcję
+  //! @brief Dostarcz plik oraz zajestruj transakcję
   //! Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta.
   //! Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu.
   //! Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.
-  //! @param String $trans_id - alfanumeryczny identyfikator tranzakcji zwrócony przez metodę watermark
+  //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark
   function deliver($trans_id) {
     $data = array('trans_id' => $trans_id);
     return $this->send_request('deliver', $data, TRUE);

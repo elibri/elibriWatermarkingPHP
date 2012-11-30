@@ -82,10 +82,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Szukaj');
 Metody publiczne</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a46a437002cbb589bdc9be2195081e1ca">__construct</a> ($token, $secret)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kontruktor obiektu API.  <a href="#a46a437002cbb589bdc9be2195081e1ca"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a701b3d3bb03b7520fa8636d42ec7d179">watermark</a> ($ident, $formats, $visible_watermark, $title_postfix)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje tranzakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu. Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator tranzakcji, która została ukończona.  <a href="#a701b3d3bb03b7520fa8636d42ec7d179"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a693358ab8be00b75659ac71e8ff5b2ad">watermark</a> ($ident, $formats, $visible_watermark, $title_postfix, $customer_ip=NULL, $client_symbol=NULL)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu. Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator transakcji, która została ukończona.  <a href="#a693358ab8be00b75659ac71e8ff5b2ad"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a71b2829ff44480bf0bcb368832cd903c">deliver</a> ($trans_id)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dostarcz plik oraz zajestruj tranzakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.  <a href="#a71b2829ff44480bf0bcb368832cd903c"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.  <a href="#a71b2829ff44480bf0bcb368832cd903c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9a6022fe6ac97609d6726248da806bb"></a><!-- doxytag: member="ElibriWatermarkingClient::available_files" ref="af9a6022fe6ac97609d6726248da806bb" args="()" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#af9a6022fe6ac97609d6726248da806bb">available_files</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Pobierz listę dostępnych plików Za pomocą tej metody możesz pobrać listę książek, które są lub będą w najbliższym czasie dostępne w systemie eLibri. <br/></td></tr>
@@ -177,10 +177,10 @@ Metody publiczne</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Dostarcz plik oraz zajestruj tranzakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu. </p>
+<p>Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu. </p>
 <dl><dt><b>Parametry:</b></dt><dd>
   <table class="params">
-    <tr><td class="paramtype">String</td><td class="paramname">$trans_id</td><td>- alfanumeryczny identyfikator tranzakcji zwrócony przez metodę watermark </td></tr>
+    <tr><td class="paramtype">String</td><td class="paramname">$trans_id</td><td>- alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark </td></tr>
   </table>
   </dd>
 </dl>
@@ -212,7 +212,7 @@ Metody publiczne</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a701b3d3bb03b7520fa8636d42ec7d179"></a><!-- doxytag: member="ElibriWatermarkingClient::watermark" ref="a701b3d3bb03b7520fa8636d42ec7d179" args="($ident, $formats, $visible_watermark, $title_postfix)" -->
+<a class="anchor" id="a693358ab8be00b75659ac71e8ff5b2ad"></a><!-- doxytag: member="ElibriWatermarkingClient::watermark" ref="a693358ab8be00b75659ac71e8ff5b2ad" args="($ident, $formats, $visible_watermark, $title_postfix, $customer_ip=NULL, $client_symbol=NULL)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -238,7 +238,19 @@ Metody publiczne</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">$&#160;</td>
-          <td class="paramname"><em>title_postfix</em>&#160;</td>
+          <td class="paramname"><em>title_postfix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">$&#160;</td>
+          <td class="paramname"><em>customer_ip</em> = <code>NULL</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">$&#160;</td>
+          <td class="paramname"><em>client_symbol</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -249,17 +261,19 @@ Metody publiczne</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje tranzakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu. Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator tranzakcji, która została ukończona. </p>
+<p>Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu. Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator transakcji, która została ukończona. </p>
 <dl><dt><b>Parametry:</b></dt><dd>
   <table class="params">
     <tr><td class="paramtype">String</td><td class="paramname">$ident</td><td>- ISBN13 (bez myślików), lub record_reference </td></tr>
     <tr><td class="paramtype">String</td><td class="paramname">$formats</td><td>- 'mobi', 'epub', lub 'mobi,epub' </td></tr>
     <tr><td class="paramtype">String</td><td class="paramname">$visible_watermark</td><td>- stopka doklejana na końcu każdego rozdziału </td></tr>
     <tr><td class="paramtype">String</td><td class="paramname">$title_postfix</td><td>- tekst doklejany do tytułu książki </td></tr>
+    <tr><td class="paramtype">String</td><td class="paramname">$customer_ip</td><td>- numer IP klienta, używany w celach wyłącznie statystycznych </td></tr>
+    <tr><td class="paramtype">String</td><td class="paramname">$client_symbol</td><td>- opcjonalny identyfikator promocji </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Zwraca:</b></dt><dd>$transid - alfanumeryczny identyfikator tranzakcji </dd></dl>
+<dl class="return"><dt><b>Zwraca:</b></dt><dd>$transid - alfanumeryczny identyfikator transakcji </dd></dl>
 
 </div>
 </div>

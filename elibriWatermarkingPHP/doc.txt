@@ -12,7 +12,7 @@
  * \verbatim pear channel-discover elibri.com.pl/system/pear \endverbatim
  *
  * Następnie instalujesz pakiet poprzez:
- * \verbatim  pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.0 \endverbatim
+ * \verbatim  pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.1 \endverbatim
  *
  * Rozwój pakietu możesz śledzić na <a href='https://github.com/elibri/elibriWatermarkingPHP'>githubie</a>
  *
@@ -37,19 +37,19 @@
  *
  * \subsection watermark
  * Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku.
- * Wysłanie zlecenia watermarkingu nie rejestruje tranzakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk,
+ * Wysłanie zlecenia watermarkingu nie rejestruje transakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk,
  * i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver. 
  *
  * \subsection deliver
- * Deliver skutkuje zarejestrowaniem tranzakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3.
- * Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną tranzakcję.
+ * Deliver skutkuje zarejestrowaniem transakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3.
+ * Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną transakcję.
 
  * Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności.
- * W takiej sytuacji tranzakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona.
+ * W takiej sytuacji transakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona.
  * Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.
  *
  * Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id 
- * identyfikator tranzakcji, która została ukończona. 
+ * identyfikator transakcji, która została ukończona. 
  *
  * \section av_files Lista dostępnych produktów
  * Można również pobrać listę dostępnych plików dla założenego klienta (uzwględnia ona przypisanych wydawców, oraz daty premier)
@@ -66,7 +66,7 @@
  * \include watermarking_example.php
  *
  * \subsection example2 Przykład 2
- * Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer tranzakcji plus odpowiednie rozszerzenie
+ * Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer transakcji plus odpowiednie rozszerzenie
  *
  * \include s3_example.php
  */
