@@ -77,7 +77,7 @@ Wprowadzenie</h2>
 Instalacja</h2>
 <p>Biblioteka jest dystrybuowana jako pakiet PEAR. Najpierw musisz zarejestrować kanał elibri: </p>
 <div class="fragment"><pre class="fragment">pear channel-discover elibri.com.pl/system/pear </pre></div><p>Następnie instalujesz pakiet poprzez: </p>
-<div class="fragment"><pre class="fragment">pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.1 </pre></div><p>Rozwój pakietu możesz śledzić na <a href="https://github.com/elibri/elibriWatermarkingPHP">githubie</a></p>
+<div class="fragment"><pre class="fragment">pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.2 </pre></div><p>Rozwój pakietu możesz śledzić na <a href="https://github.com/elibri/elibriWatermarkingPHP">githubie</a></p>
 <p>Jeśli używasz czytnika rss, to możesz zaabonować <a href="https://www.elibri.com.pl/system/pear/feed.xml">ten kanał</a>.</p>
 <h2><a class="anchor" id="usage_sec"></a>
 Użycie biblioteki</h2>
@@ -121,7 +121,7 @@ require_once(dirname(__FILE__) . <span class="stringliteral">&#39;/elibriWaterma
 $client = <span class="keyword">new</span> <a class="code" href="classElibriWatermarkingClient.html" title="ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.">ElibriWatermarkingClient</a>($key, $secret);
 
 <span class="comment">//zleć watermarkowanie</span>
-$transid = $client-&gt;watermark($book_rr, <span class="stringliteral">&quot;mobi,epub&quot;</span>, <span class="stringliteral">&quot;Książka dla Wojtka Kowalskiego&quot;</span>, <span class="stringliteral">&quot;Wojtek Kowalski&quot;</span>); 
+$transid = $client-&gt;watermark($book_rr, <span class="stringliteral">&quot;mobi,epub&quot;</span>, <span class="stringliteral">&quot;Książka dla Wojtka Kowalskiego&quot;</span>, <span class="stringliteral">&quot;Wojtek Kowalski&quot;</span>, <span class="stringliteral">&quot;178.42.78.98&quot;</span>); 
 print <span class="stringliteral">&quot;transid: $transid\n&quot;</span>;
 
 <span class="comment">//potwierdzaj tranzakcję oraz dostarcz plik do bucketu S3 przypisanego odbiorcy</span>

@@ -105,14 +105,17 @@ class ElibriWatermarkingClient {
 
   private $token;
   private $secret;
+  private $subdomains;
   
   //! @brief Kontruktor obiektu API
   //! @param String $token - publiczny token eLibri Watermarking API
   //! @param String $secret - prywatny token eLibri Watermarking API
-  function __construct($token, $secret) {
+  //! @param Array $subdomains - lista subdomen, opcjonalnie. Przydatne, gdy używana wersja PHP nie zawiera metody dns_get_record
+  function __construct($token, $secret, $subdomains = NULL) {
   
     $this->token = $token;
     $this->secret = $secret;
+    $this->subdomains = $subdomains;
   }
   
   //! @brief Zlecaj watermarkowanie.
@@ -165,6 +168,18 @@ class ElibriWatermarkingClient {
     return $this->send_request('deliver', $data, TRUE);
   }
 
+  //! @brief Zleca ponowne watermarkowanie wcześniej zakupionego pliku
+  //! Sklep nie jest zobowiązany do przechowywania zwatermarkowanego pliku dłużej, niż 7 dni. Po tym czasie może wykasować plik, 
+  //! a jeśli klient będzie chciał ponownie pobrać plik, to można zlecić jego watermarkowanie poprzez retry. Każde wywołanie retry zwraca nowy
+  //! identyfikator transakcji - należy go zapisać w swojej lokalnej bazie danych. Nie ma limitu wywołań retry, nie mogą one jednak występować częściej,
+  //! niż co 7 dni. Przy kolejnym wywołaniu retry należy podać $trans_id pochodzący z poprzedniego wywołania retry. Operacje retry są bezpłatne, i nie są
+  //! raportowane jako nowa sprzedaż.
+  //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark lub retry  
+  function retry($trans_id) {
+    $data = array('trans_id' => $trans_id);
+    return $this->send_request('retry', $data, TRUE);
+  }
+
   //! @brief Pobierz listę dostępnych plików
   //! Za pomocą tej metody możesz pobrać listę książek, które są lub będą w najbliższym czasie dostępne w systemie eLibri
   function available_files() {
@@ -207,9 +222,13 @@ class ElibriWatermarkingClient {
     $data['token'] = $this->token;
 
     //get the server list
-    $txts = dns_get_record("transactional-servers.elibri.com.pl", DNS_TXT);
-    $subdomains = array_map("trim", explode(",", $txts[0]["txt"]));
-    shuffle($subdomains); //randomize the order
+    if ($this->subdomains) {
+      $subdomains = $this->subdomains;
+    } else {
+      $txts = dns_get_record("transactional-servers.elibri.com.pl", DNS_TXT);
+      $subdomains = array_map("trim", explode(",", $txts[0]["txt"]));
+      shuffle($subdomains); //randomize the order
+    }
     foreach ($subdomains as $subdomain) {
       $uri = "https://$subdomain.elibri.com.pl/watermarking/$method_name";
       if (!$do_post) {

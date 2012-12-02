@@ -12,7 +12,7 @@ require_once(dirname(__FILE__) . '/elibriWatermarkingPHP.php');
 $client = new ElibriWatermarkingClient($key, $secret);
 
 //zleć watermarkowanie
-$transid = $client->watermark($book_rr, "mobi,epub", "Książka dla Wojtka Kowalskiego", "Wojtek Kowalski"); 
+$transid = $client->watermark($book_rr, "mobi,epub", "Książka dla Wojtka Kowalskiego", "Wojtek Kowalski", "178.42.78.98"); 
 print "transid: $transid\n";
 
 //potwierdzaj tranzakcję oraz dostarcz plik do bucketu S3 przypisanego odbiorcy

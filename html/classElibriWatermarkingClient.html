@@ -80,12 +80,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Szukaj');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Metody publiczne</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a46a437002cbb589bdc9be2195081e1ca">__construct</a> ($token, $secret)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kontruktor obiektu API.  <a href="#a46a437002cbb589bdc9be2195081e1ca"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#aa567fda2c6f1fa8ac552d3fef5e25175">__construct</a> ($token, $secret, $subdomains=NULL)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kontruktor obiektu API.  <a href="#aa567fda2c6f1fa8ac552d3fef5e25175"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a693358ab8be00b75659ac71e8ff5b2ad">watermark</a> ($ident, $formats, $visible_watermark, $title_postfix, $customer_ip=NULL, $client_symbol=NULL)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu. Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator transakcji, która została ukończona.  <a href="#a693358ab8be00b75659ac71e8ff5b2ad"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a71b2829ff44480bf0bcb368832cd903c">deliver</a> ($trans_id)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.  <a href="#a71b2829ff44480bf0bcb368832cd903c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#ad6e2307695a64ddfe3923ec6ed45d675">retry</a> ($trans_id)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Zleca ponowne watermarkowanie wcześniej zakupionego pliku Sklep nie jest zobowiązany do przechowywania zwatermarkowanego pliku dłużej, niż 7 dni. Po tym czasie może wykasować plik, a jeśli klient będzie chciał ponownie pobrać plik, to można zlecić jego watermarkowanie poprzez retry. Każde wywołanie retry zwraca nowy identyfikator transakcji - należy go zapisać w swojej lokalnej bazie danych. Nie ma limitu wywołań retry, nie mogą one jednak występować częściej, niż co 7 dni. Przy kolejnym wywołaniu retry należy podać $trans_id pochodzący z poprzedniego wywołania retry. Operacje retry są bezpłatne, i nie są raportowane jako nowa sprzedaż.  <a href="#ad6e2307695a64ddfe3923ec6ed45d675"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9a6022fe6ac97609d6726248da806bb"></a><!-- doxytag: member="ElibriWatermarkingClient::available_files" ref="af9a6022fe6ac97609d6726248da806bb" args="()" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#af9a6022fe6ac97609d6726248da806bb">available_files</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Pobierz listę dostępnych plików Za pomocą tej metody możesz pobrać listę książek, które są lub będą w najbliższym czasie dostępne w systemie eLibri. <br/></td></tr>
@@ -100,7 +102,7 @@ Metody publiczne</h2></td></tr>
 <hr/><a name="details" id="details"></a><h2>Opis szczegółowy</h2>
 <div class="textblock"><p>ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri. </p>
 </div><hr/><h2>Dokumentacja konstruktora i destruktora</h2>
-<a class="anchor" id="a46a437002cbb589bdc9be2195081e1ca"></a><!-- doxytag: member="ElibriWatermarkingClient::__construct" ref="a46a437002cbb589bdc9be2195081e1ca" args="($token, $secret)" -->
+<a class="anchor" id="aa567fda2c6f1fa8ac552d3fef5e25175"></a><!-- doxytag: member="ElibriWatermarkingClient::__construct" ref="aa567fda2c6f1fa8ac552d3fef5e25175" args="($token, $secret, $subdomains=NULL)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -114,7 +116,13 @@ Metody publiczne</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">$&#160;</td>
-          <td class="paramname"><em>secret</em>&#160;</td>
+          <td class="paramname"><em>secret</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">$&#160;</td>
+          <td class="paramname"><em>subdomains</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -130,6 +138,7 @@ Metody publiczne</h2></td></tr>
   <table class="params">
     <tr><td class="paramtype">String</td><td class="paramname">$token</td><td>- publiczny token eLibri Watermarking API </td></tr>
     <tr><td class="paramtype">String</td><td class="paramname">$secret</td><td>- prywatny token eLibri Watermarking API </td></tr>
+    <tr><td class="paramtype">Array</td><td class="paramname">$subdomains</td><td>- lista subdomen, opcjonalnie. Przydatne, gdy używana wersja PHP nie zawiera metody dns_get_record </td></tr>
   </table>
   </dd>
 </dl>
@@ -206,6 +215,31 @@ Metody publiczne</h2></td></tr>
 <dl><dt><b>Parametry:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">$id</td><td>- numeryczny identyfikator dostawcy </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ad6e2307695a64ddfe3923ec6ed45d675"></a><!-- doxytag: member="ElibriWatermarkingClient::retry" ref="ad6e2307695a64ddfe3923ec6ed45d675" args="($trans_id)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ElibriWatermarkingClient::retry </td>
+          <td>(</td>
+          <td class="paramtype">$&#160;</td>
+          <td class="paramname"><em>trans_id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Zleca ponowne watermarkowanie wcześniej zakupionego pliku Sklep nie jest zobowiązany do przechowywania zwatermarkowanego pliku dłużej, niż 7 dni. Po tym czasie może wykasować plik, a jeśli klient będzie chciał ponownie pobrać plik, to można zlecić jego watermarkowanie poprzez retry. Każde wywołanie retry zwraca nowy identyfikator transakcji - należy go zapisać w swojej lokalnej bazie danych. Nie ma limitu wywołań retry, nie mogą one jednak występować częściej, niż co 7 dni. Przy kolejnym wywołaniu retry należy podać $trans_id pochodzący z poprzedniego wywołania retry. Operacje retry są bezpłatne, i nie są raportowane jako nowa sprzedaż. </p>
+<dl><dt><b>Parametry:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramtype">String</td><td class="paramname">$trans_id</td><td>- alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark lub retry </td></tr>
   </table>
   </dd>
 </dl>
