@@ -90,7 +90,7 @@ Użycie biblioteki</h2>
 <li>nazwę bucketu na S3, na którym będą umieszczane zwatermarkowane pliki.</li>
 </ul>
 <p>Następnie niezbędne jest podpisanie umów z wydawnictwami, których pliki mają być sprzedawane z pośrednictwem systemu eLibri.</p>
-<p>API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: <b>watermark</b> i <b>deliver</b>. Metody te są oferowane przez klasę <a class="el" href="classElibriWatermarkingClient.html" title="ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.">ElibriWatermarkingClient</a></p>
+<p>API watermarkingu jest maksymalne proste, składa się z trzech podstawowych wywołań: <b>watermark</b>, <b>deliver</b> oraz <b>retry</b>. Metody te są oferowane przez klasę <a class="el" href="classElibriWatermarkingClient.html" title="ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.">ElibriWatermarkingClient</a></p>
 <h3><a class="anchor" id="watermark"></a>
 watermark</h3>
 <p>Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku. Wysłanie zlecenia watermarkingu nie rejestruje transakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk, i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver.</p>
@@ -99,6 +99,9 @@ deliver</h3>
 <p>Deliver skutkuje zarejestrowaniem transakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3. Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną transakcję.</p>
 <p>Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności. W takiej sytuacji transakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona. Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.</p>
 <p>Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id identyfikator transakcji, która została ukończona.</p>
+<h2><a class="anchor" id="retry"></a>
+retry</h2>
+<p>Sklep jest zobowiązany do przetrzymywania zwatermarkowanego pliku przynajmniej przez 7 dni. Po tym czasie maleje prawdopodobieństwo, że klient będzie chciał pobrać plik, poza tym przechowywanie wszystkich zakupionych plików może stać się kłopotliwe w dłuższej perspektywie. Retry służy do ponowienia transakcji (niezbędne jest tutaj podanie alfanumerycznego identyfikatora transakcji zwróconego przez metodę watermark). Plik zostanie zwaterkowany na nowo z parametrami podanymi podczas pierwszego wywołania watermark. Zwracany jest nowy identyfikator transakcji. Sklep w swoim systemie może nadpisać poprzedni identyfikator transakcji, albo przechowywać całą historię numerów transakcji. Jeśli retry jest wywoływany kolejny raz, to należy zawsze podać ostatni identytikator transakcji. Po każdym wywołaniu retry należy wywołać metodę deliver ze zwróconym trans_id.</p>
 <h2><a class="anchor" id="av_files"></a>
 Lista dostępnych produktów</h2>
 <p>Można również pobrać listę dostępnych plików dla założenego klienta (uzwględnia ona przypisanych wydawców, oraz daty premier) Uwzględnia on również książki, dla których są wgrane wszystkie pliki, ale nie nastąpiła jeszcze jej premiera (wtedy ustawione jest pole available_date) Służy do tego metoda <a class="el" href="classElibriWatermarkingClient.html#af9a6022fe6ac97609d6726248da806bb" title="Pobierz listę dostępnych plików Za pomocą tej metody możesz pobrać listę książek, które są lub będą w...">ElibriWatermarkingClient::available_files</a></p>

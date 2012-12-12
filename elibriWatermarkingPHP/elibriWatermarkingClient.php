@@ -173,8 +173,11 @@ class ElibriWatermarkingClient {
   //! a jeśli klient będzie chciał ponownie pobrać plik, to można zlecić jego watermarkowanie poprzez retry. Każde wywołanie retry zwraca nowy
   //! identyfikator transakcji - należy go zapisać w swojej lokalnej bazie danych. Nie ma limitu wywołań retry, nie mogą one jednak występować częściej,
   //! niż co 7 dni. Przy kolejnym wywołaniu retry należy podać $trans_id pochodzący z poprzedniego wywołania retry. Operacje retry są bezpłatne, i nie są
-  //! raportowane jako nowa sprzedaż.
+  //! raportowane jako nowa sprzedaż. 
+  //! Zwracany jest nowy identyfikator transakcji, który trzeba zapisać w systemie (np. w miejsce poprzedniego identyfikatora). Po wywołaniu retry
+  //! niezbędne jest wywołanie metody deliver z nowootrzymanym identyfikatorem transakcji.
   //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark lub retry  
+  //! @return $transid - alfanumeryczny identyfikator nowej transakcji
   function retry($trans_id) {
     $data = array('trans_id' => $trans_id);
     return $this->send_request('retry', $data, TRUE);

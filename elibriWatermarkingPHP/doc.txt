@@ -33,7 +33,7 @@
  * 
  * Następnie niezbędne jest podpisanie umów z wydawnictwami, których pliki mają być sprzedawane z pośrednictwem systemu eLibri.
  *
- * API watermarkingu jest maksymalne proste, składa się z dwóch wywołań: \b watermark i \b deliver. Metody te są oferowane przez klasę ElibriWatermarkingClient
+ * API watermarkingu jest maksymalne proste, składa się z trzech podstawowych wywołań: \b watermark, \b deliver oraz \b retry. Metody te są oferowane przez klasę ElibriWatermarkingClient
  *
  * \subsection watermark
  * Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient jak najkrócej czekał na dostarczenie pliku.
@@ -50,6 +50,15 @@
  *
  * Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id 
  * identyfikator transakcji, która została ukończona. 
+ *
+ * \section retry
+ * Sklep jest zobowiązany do przetrzymywania zwatermarkowanego pliku przynajmniej przez 7 dni. Po tym czasie maleje prawdopodobieństwo, że klient będzie chciał
+ * pobrać plik, poza tym przechowywanie wszystkich zakupionych plików może stać się kłopotliwe w dłuższej perspektywie. Retry służy do ponowienia transakcji
+ * (niezbędne jest tutaj podanie alfanumerycznego identyfikatora transakcji zwróconego przez metodę watermark). Plik zostanie zwaterkowany na nowo
+ * z parametrami podanymi podczas pierwszego wywołania watermark. Zwracany jest nowy identyfikator transakcji. Sklep w swoim systemie może nadpisać poprzedni
+ * identyfikator transakcji, albo przechowywać całą historię numerów transakcji. Jeśli retry jest wywoływany kolejny raz, to należy zawsze podać
+ * ostatni identytikator transakcji. Po każdym wywołaniu retry należy wywołać metodę deliver ze zwróconym trans_id.
+ *
  *
  * \section av_files Lista dostępnych produktów
  * Można również pobrać listę dostępnych plików dla założenego klienta (uzwględnia ona przypisanych wydawców, oraz daty premier)
