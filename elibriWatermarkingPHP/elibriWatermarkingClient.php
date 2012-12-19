@@ -235,7 +235,7 @@ class ElibriWatermarkingClient {
     foreach ($subdomains as $subdomain) {
       $uri = "https://$subdomain.elibri.com.pl/watermarking/$method_name";
       if (!$do_post) {
-        $uri = $uri . "?" . http_build_query($data);
+        $uri = $uri . "?" . http_build_query($data, '', '&');
       }
 
       $ch = curl_init($uri);
@@ -248,7 +248,7 @@ class ElibriWatermarkingClient {
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
       if ($do_post) {
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
       }
       $curlResult = curl_exec($ch);
       try {
