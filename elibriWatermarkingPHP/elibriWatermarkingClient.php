@@ -200,7 +200,7 @@ class ElibriWatermarkingClient {
   //! zostać zafakturowane zarówno na konto dystrybutora, jak i wydawcy.
   //! @param String $ident - identyfikator produktu (record_reference albo isbn bez kresek)
   function check_suppliers($ident) {
-    if (preg_match('/^[0-9]+$/', $ident)) {
+    if (preg_match('/^\d{13}$/', $ident)) {
       $ident_type = 'isbn';
     } else {
       $ident_type = 'record_reference';
