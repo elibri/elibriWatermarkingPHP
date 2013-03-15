@@ -134,7 +134,7 @@ class ElibriWatermarkingClient {
   //! @param String $client_symbol - opcjonalny identyfikator promocji
   //! @return $transid - alfanumeryczny identyfikator transakcji
   function watermark($ident, $formats, $visible_watermark, $title_postfix, $customer_ip = NULL, $client_symbol = NULL) {
-    if (preg_match('/^[0-9]+$/', $ident)) { 
+    if (preg_match('/^\d{13}$/', $ident)) {
       $ident_type = 'isbn';
     } else {
       $ident_type = 'record_reference';
