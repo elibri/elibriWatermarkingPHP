@@ -195,6 +195,13 @@ class ElibriWatermarkingClient {
     return json_decode($this->send_request('soon_available_files.json', array(), FALSE), TRUE);
   }
 
+  //! @brief Ponierz listę plików, które wkrótce przestaną być dostępne
+  //! Za pomocą tej metody możesz pobrać listę ksiażek, które wkrótce przestaną być dostępne
+  function soon_unavailable_files() {
+    return json_decode($this->send_request('soon_unavailable_files.json', array(), FALSE), TRUE);
+  }
+
+
   //! @brief Pobierz listę możliwych dostawców pliku. 
   //! Pobiera listę możliwych dostawców pliku. Ma to znaczenie tylko w przypadku książek, które mogą 
   //! zostać zafakturowane zarówno na konto dystrybutora, jak i wydawcy.
