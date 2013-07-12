@@ -289,7 +289,7 @@ class ElibriWatermarkingClient {
       throw new ElibriServerErrorException();
     } else if ($response_code == 401) {
       throw new ElibriInvalidAuthException();
-    } else if (($response_code != 200) && ($response_code != 412)) {
+    } else if (($response_code != 200) && ($response_code != 412) && ($response_code != 202)) {
       throw new ElibriUnknownException();
     }
     return $curlResult;
