@@ -8,15 +8,7 @@
 
  * \section install_sec Instalacja
  *
- * Biblioteka jest dystrybuowana jako pakiet PEAR. Najpierw musisz zarejestrować kanał elibri: 
- * \verbatim pear channel-discover elibri.com.pl/system/pear \endverbatim
- *
- * Następnie instalujesz pakiet poprzez:
- * \verbatim  pear install channel://elibri.com.pl/system/pear/elibriWatermarkingPHP-0.2.6 \endverbatim
- *
- * Rozwój pakietu możesz śledzić na <a href='https://github.com/elibri/elibriWatermarkingPHP'>githubie</a>
- *
- * Jeśli używasz czytnika rss, to możesz zaabonować <a href='https://www.elibri.com.pl/system/pear/feed.xml'>ten kanał</a>.
+ * Proszę instalować bibliotekę ze źródeł: https://github.com/elibri/elibriWatermarkingPHP
  *
  * \section usage_sec Użycie biblioteki
  * 
@@ -41,7 +33,7 @@
  * i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver. 
  *
  * \subsection deliver
- * Deliver skutkuje zarejestrowaniem transakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3.
+ * Deliver skutkuje zarejestrowaniem transakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3 (w przypadku e-booków). 
  * Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną transakcję.
 
  * Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności.
@@ -49,7 +41,8 @@
  * Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.
  *
  * Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id 
- * identyfikator transakcji, która została ukończona. 
+ * identyfikator transakcji, która została ukończona.  W przypadku audiobooków w pingu zwrotnym umieszczany jest również link do pliku, który mogą Państwo
+ * udostępnić klientom.
  *
  * \section retry
  * Sklep jest zobowiązany do przetrzymywania zwatermarkowanego pliku przynajmniej przez 7 dni. Po tym czasie maleje prawdopodobieństwo, że klient będzie chciał

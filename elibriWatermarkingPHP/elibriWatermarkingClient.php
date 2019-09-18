@@ -68,7 +68,7 @@ class ElibriRequestExpiredException extends Exception {
 class ElibriWrongFormatsException extends Exception {
   
   function __construct() {
-    parent::__construct("Wrong Format, allowed: 'epub', 'mobi', 'epub,mobi'", 1000);
+    parent::__construct("Wrong Format, allowed: 'epub', 'mobi', 'epub,mobi', 'mp3_in_zip'", 1000);
   }
 }
 
@@ -140,7 +140,7 @@ class ElibriWatermarkingClient {
       $ident_type = 'record_reference';
     }
 
-    if (!preg_match('/^(epub|mobi|pdf|,)+$/', $formats)) {
+    if (!preg_match('/^(epub|mobi|pdf|mp3_in_zip,)+$/', $formats)) {
       throw new ElibriWrongFormatsException();
     }
 
