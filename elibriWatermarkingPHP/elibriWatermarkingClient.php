@@ -140,7 +140,7 @@ class ElibriWatermarkingClient {
       $ident_type = 'record_reference';
     }
 
-    if (!preg_match('/^(epub|mobi|pdf|mp3_in_zip,)+$/', $formats)) {
+    if (!preg_match('/^(epub|mobi|pdf|mp3_in_zip|,)+$/', $formats)) {
       throw new ElibriWrongFormatsException();
     }
 
