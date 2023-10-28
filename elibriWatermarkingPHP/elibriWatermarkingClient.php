@@ -18,10 +18,10 @@ class ElibriAPIConnectionException extends Exception {
 //! @brief Wyjątek - Podane zostały błędne parametry
 //! @ingroup exceptions
 class ElibriParametersError extends Exception {
-  
+
   function __construct($msg) {
     parent::__construct($msg, 400);
-  
+
   }
 }
 
@@ -32,7 +32,7 @@ class ElibriInvalidAuthException extends Exception {
 
   function __construct() {
     parent::__construct("Unauthorized", 401);
-  
+
   }
 }
 
@@ -66,7 +66,7 @@ class ElibriRequestExpiredException extends Exception {
 //! @brief Wyjątek - Nieprawidłowy login lub hasło
 //! @ingroup exceptions
 class ElibriWrongFormatsException extends Exception {
-  
+
   function __construct() {
     parent::__construct("Wrong Format, allowed: 'epub', 'mobi', 'epub,mobi', 'mp3_in_zip'", 1000);
   }
@@ -106,26 +106,26 @@ class ElibriWatermarkingClient {
   private $token;
   private $secret;
   private $subdomains;
-  
+
   //! @brief Kontruktor obiektu API
   //! @param String $token - publiczny token eLibri Watermarking API
   //! @param String $secret - prywatny token eLibri Watermarking API
   //! @param Array $subdomains - lista subdomen, opcjonalnie. Przydatne, gdy używana wersja PHP nie zawiera metody dns_get_record
   function __construct($token, $secret, $subdomains = NULL) {
-  
+
     $this->token = $token;
     $this->secret = $secret;
     $this->subdomains = $subdomains;
   }
-  
+
   //! @brief Zlecaj watermarkowanie.
   //! Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy.
   //! Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane)
   //! eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu
   //! płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu.
-  //! Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), 
-  //! przekazując w parametrze trans_id identyfikator transakcji, która została ukończona. 
-  
+  //! Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST),
+  //! przekazując w parametrze trans_id identyfikator transakcji, która została ukończona.
+
   //! @param String $ident - ISBN13 (bez myślików), lub record_reference
   //! @param String $formats - 'mobi', 'epub', lub 'mobi,epub'
   //! @param String $visible_watermark - stopka doklejana na końcu każdego rozdziału
@@ -149,7 +149,7 @@ class ElibriWatermarkingClient {
 
     if ($customer_ip) {
       $data['customer_ip'] = $customer_ip;
-    } 
+    }
 
     if ($client_symbol) {
       $data['client_symbol'] = $client_symbol;
@@ -169,14 +169,14 @@ class ElibriWatermarkingClient {
   }
 
   //! @brief Zleca ponowne watermarkowanie wcześniej zakupionego pliku
-  //! Sklep nie jest zobowiązany do przechowywania zwatermarkowanego pliku dłużej, niż 7 dni. Po tym czasie może wykasować plik, 
+  //! Sklep nie jest zobowiązany do przechowywania zwatermarkowanego pliku dłużej, niż 7 dni. Po tym czasie może wykasować plik,
   //! a jeśli klient będzie chciał ponownie pobrać plik, to można zlecić jego watermarkowanie poprzez retry. Każde wywołanie retry zwraca nowy
   //! identyfikator transakcji - należy go zapisać w swojej lokalnej bazie danych. Nie ma limitu wywołań retry, nie mogą one jednak występować częściej,
   //! niż co 7 dni. Przy kolejnym wywołaniu retry należy podać $trans_id pochodzący z poprzedniego wywołania retry. Operacje retry są bezpłatne, i nie są
-  //! raportowane jako nowa sprzedaż. 
+  //! raportowane jako nowa sprzedaż.
   //! Zwracany jest nowy identyfikator transakcji, który trzeba zapisać w systemie (np. w miejsce poprzedniego identyfikatora). Po wywołaniu retry
   //! niezbędne jest wywołanie metody deliver z nowootrzymanym identyfikatorem transakcji.
-  //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark lub retry  
+  //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark lub retry
   //! @return $transid - alfanumeryczny identyfikator nowej transakcji
   function retry($trans_id) {
     $data = array('trans_id' => $trans_id);
@@ -201,31 +201,8 @@ class ElibriWatermarkingClient {
     return json_decode($this->send_request('soon_unavailable_files.json', array(), FALSE), TRUE);
   }
 
-
-  //! @brief Pobierz listę możliwych dostawców pliku. 
-  //! Pobiera listę możliwych dostawców pliku. Ma to znaczenie tylko w przypadku książek, które mogą 
-  //! zostać zafakturowane zarówno na konto dystrybutora, jak i wydawcy.
-  //! @param String $ident - identyfikator produktu (record_reference albo isbn bez kresek)
-  function check_suppliers($ident) {
-    if (preg_match('/^\d{13}$/', $ident)) {
-      $ident_type = 'isbn';
-    } else {
-      $ident_type = 'record_reference';
-    }
-    $data = array($ident_type => $ident);
-    return explode(",", $this->send_request('check_suppliers', $data, FALSE));
-  }
-
-  //! @brief Pobierz nazwę dostawcy
-  //! Pobiera nazwę dostawcy o określonym id (zwracanym przez check_suppliers)
-  //! @param $id - numeryczny identyfikator dostawcy
-  function get_supplier($id) {
-    $data = array('id' => $id);
-    return $this->send_request('get_supplier', $data, FALSE);
-  }
-
   private function send_request($method_name, $data, $do_post) {
-    $stamp = time(); 
+    $stamp = time();
     $sig = rawurlencode(base64_encode(hash_hmac("sha1", $this->secret, $stamp, true)));
     $data['stamp'] = $stamp;
     $data['sig'] = $sig;
@@ -248,7 +225,7 @@ class ElibriWatermarkingClient {
       $ch = curl_init($uri);
 
       //enable - to see debugging messages
-      //curl_setopt($ch, CURLOPT_VERBOSE, TRUE); 
+      //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
 
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -259,7 +236,7 @@ class ElibriWatermarkingClient {
       }
       $curlResult = curl_exec($ch);
       try {
-        return $this->validate_response($curlResult, $ch); 
+        return $this->validate_response($curlResult, $ch);
       } catch (ElibriServerErrorException $e) {
         //silency ignore this error
       } catch (ElibriUnknownException $e) {
@@ -293,7 +270,7 @@ class ElibriWatermarkingClient {
       throw new ElibriUnknownException();
     }
     return $curlResult;
-  }  
+  }
 
 }
 
