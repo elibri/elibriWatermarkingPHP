@@ -105,17 +105,17 @@ class ElibriWatermarkingClient {
 
   private $token;
   private $secret;
-  private $subdomains;
+  private $host;
 
   //! @brief Kontruktor obiektu API
   //! @param String $token - publiczny token eLibri Watermarking API
   //! @param String $secret - prywatny token eLibri Watermarking API
   //! @param Array $subdomains - lista subdomen, opcjonalnie. Przydatne, gdy używana wersja PHP nie zawiera metody dns_get_record
-  function __construct($token, $secret, $subdomains = NULL) {
+  function __construct($token, $secret, $host = "https://www.elibri.com.pl") {
 
     $this->token = $token;
     $this->secret = $secret;
-    $this->subdomains = $subdomains;
+    $this->host = $host;
   }
 
   //! @brief Zlecaj watermarkowanie.
@@ -208,42 +208,33 @@ class ElibriWatermarkingClient {
     $data['sig'] = $sig;
     $data['token'] = $this->token;
 
-    //get the server list
-    if ($this->subdomains) {
-      $subdomains = $this->subdomains;
-    } else {
-      $txts = dns_get_record("transactional-servers.elibri.com.pl", DNS_TXT);
-      $subdomains = array_map("trim", explode(",", $txts[0]["txt"]));
-      shuffle($subdomains); //randomize the order
+    $uri = $this->host . "/watermarking/$method_name";
+
+    if (!$do_post) {
+      $uri = $uri . "?" . http_build_query($data, '', '&');
     }
-    foreach ($subdomains as $subdomain) {
-      $uri = "https://$subdomain.elibri.com.pl/watermarking/$method_name";
-      if (!$do_post) {
-        $uri = $uri . "?" . http_build_query($data, '', '&');
-      }
 
-      $ch = curl_init($uri);
+    $ch = curl_init($uri);
 
-      //enable - to see debugging messages
-      //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+    //enable - to see debugging messages
+    //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
 
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-      if ($do_post) {
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
-      }
-      $curlResult = curl_exec($ch);
-      try {
-        return $this->validate_response($curlResult, $ch);
-      } catch (ElibriServerErrorException $e) {
-        //silency ignore this error
-      } catch (ElibriUnknownException $e) {
-        //silency ignore this error
-      } catch (ElibriAPIConnectionException $e) {
-        //silency ignore this error
-      }
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    if ($do_post) {
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
+    }
+    $curlResult = curl_exec($ch);
+    try {
+      return $this->validate_response($curlResult, $ch);
+    } catch (ElibriServerErrorException $e) {
+      //silency ignore this error
+    } catch (ElibriUnknownException $e) {
+      //silency ignore this error
+    } catch (ElibriAPIConnectionException $e) {
+      //silency ignore this error
     }
     throw new ElibriNoServerResponsingException();
   }
