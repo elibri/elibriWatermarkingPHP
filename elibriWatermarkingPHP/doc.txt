@@ -4,7 +4,7 @@
  *
  * <a href='https://www.elibri.com.pl'>elibri</a> jest systemem stworzonym dla wydawnictw,
  * które mogą za jego pośrednictwem sprzedawać swoje ebooki na swoich stronach internetowych,
- * jak i na stronach współpracująch firm.
+ * jak i na stronach współpracująch firm. Pełna dokumentacja API znajduje si się pod adresem https://www.elibri.com.pl/doc/watermarking/
 
  * \section install_sec Instalacja
  *
@@ -28,15 +28,15 @@
  * i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero po wykonaniu metody deliver.
  *
  * \subsection deliver
- * Deliver skutkuje zarejestrowaniem transakcji w systemie, oraz dostarczeniem pliku lub plików do przypisanego sklepowi bucketu na S3 (w przypadku e-booków).
+ * Deliver skutkuje zarejestrowaniem transakcji w systemie oraz dostarczeniem pliku.
  * Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo obarczy go fakturą za dokonaną transakcję.
 
  * Oczywiście może się zdarzyć sytuacja, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient nie dokonał płatności.
  * W takiej sytuacji transakcja zostaje anulowana, i żadna ze stron nie zostanie obciążona.
  * Wywołanie deliver musi następić w ciągu siedmiu 7 dni od wywołania watermark.
  *
- * Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id
- * identyfikator transakcji, która została ukończona.  W przypadku audiobooków w pingu zwrotnym umieszczany jest również link do pliku, który mogą Państwo
+ * Po zakończeniu znakowania pliku nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST), przekazując w parametrze trans_id
+ * identyfikator transakcji, która została ukończona. W pingu zwrotnym umieszczany jest również link do pliku, który mogą Państwo
  * udostępnić klientom.
  *
  * \section retry
@@ -56,14 +56,9 @@
 
  * \section Przykłady
  *
- * \subsection example1 Przykład 1
+ * \subsection example1 Przykład
  *
- * W poniższym przykładzie zlecasz watermarkowanie i dostarczenie pliku na S3.
+ * W poniższym przykładzie zlecasz watermarkowanie jednej książki.
  *
  * \include watermarking_example.php
- *
- * \subsection example2 Przykład 2
- * Ściąganie pliku mobi z S3, nazwa pliku na S3 to numer transakcji plus odpowiednie rozszerzenie
- *
- * \include s3_example.php
  */
