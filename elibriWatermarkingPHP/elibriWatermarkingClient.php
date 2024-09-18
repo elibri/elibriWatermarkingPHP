@@ -121,35 +121,26 @@ class ElibriWatermarkingClient {
   //! @brief Zlecaj watermarkowanie.
   //! Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy.
   //! Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane)
-  //! eLibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu
-  //! płatności przez klienta należy wywołać metodę deliver, która to dostarczy plik do sklepu.
-  //! Po umieszczeniu pliku na S3 nasz serwer łączy się z przekazanym przez Państwa URL-em (metoda POST),
-  //! przekazując w parametrze trans_id identyfikator transakcji, która została ukończona.
+  //! elibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu
+  //! płatności przez klienta należy wywołać metodę deliver, która to asynchronicznie dostarczy linki do plik do sklepu.
 
   //! @param String $ident - ISBN13 (bez myślików), lub record_reference
   //! @param String $formats - 'mobi', 'epub', lub 'mobi,epub'
   //! @param String $visible_watermark - stopka doklejana na końcu każdego rozdziału
-  //! @param String $title_postfix - tekst doklejany do tytułu książki
-  //! @param String $customer_ip - numer IP klienta, używany w celach wyłącznie statystycznych
   //! @param String $client_symbol - opcjonalny identyfikator promocji
   //! @return $transid - alfanumeryczny identyfikator transakcji
-  function watermark($ident, $formats, $visible_watermark, $title_postfix, $customer_ip = NULL, $client_symbol = NULL) {
+  function watermark($ident, $formats, $visible_watermark, $client_symbol = NULL) {
     if (preg_match('/^\d{13}$/', $ident)) {
       $ident_type = 'isbn';
     } else {
       $ident_type = 'record_reference';
     }
 
-    if (!preg_match('/^(epub|mobi|pdf|mp3_in_zip|,)+$/', $formats)) {
+    if (!preg_match('/^(epub|mobi|pdf|mp3_in_zip|mp3_in_lpf|,)+$/', $formats)) {
       throw new ElibriWrongFormatsException();
     }
 
-    $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark,
-                  'title_postfix' => $title_postfix);
-
-    if ($customer_ip) {
-      $data['customer_ip'] = $customer_ip;
-    }
+    $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark)
 
     if ($client_symbol) {
       $data['client_symbol'] = $client_symbol;
@@ -166,21 +157,6 @@ class ElibriWatermarkingClient {
   function deliver($trans_id) {
     $data = array('trans_id' => $trans_id);
     return $this->send_request('deliver', $data, TRUE);
-  }
-
-  //! @brief Zleca ponowne watermarkowanie wcześniej zakupionego pliku
-  //! Sklep nie jest zobowiązany do przechowywania zwatermarkowanego pliku dłużej, niż 7 dni. Po tym czasie może wykasować plik,
-  //! a jeśli klient będzie chciał ponownie pobrać plik, to można zlecić jego watermarkowanie poprzez retry. Każde wywołanie retry zwraca nowy
-  //! identyfikator transakcji - należy go zapisać w swojej lokalnej bazie danych. Nie ma limitu wywołań retry, nie mogą one jednak występować częściej,
-  //! niż co 7 dni. Przy kolejnym wywołaniu retry należy podać $trans_id pochodzący z poprzedniego wywołania retry. Operacje retry są bezpłatne, i nie są
-  //! raportowane jako nowa sprzedaż.
-  //! Zwracany jest nowy identyfikator transakcji, który trzeba zapisać w systemie (np. w miejsce poprzedniego identyfikatora). Po wywołaniu retry
-  //! niezbędne jest wywołanie metody deliver z nowootrzymanym identyfikatorem transakcji.
-  //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark lub retry
-  //! @return $transid - alfanumeryczny identyfikator nowej transakcji
-  function retry($trans_id) {
-    $data = array('trans_id' => $trans_id);
-    return $this->send_request('retry', $data, TRUE);
   }
 
   //! @brief Pobierz listę dostępnych plików
