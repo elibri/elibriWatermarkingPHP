@@ -1,14 +1,5 @@
 var searchData=
 [
-  ['elibriapiconnectionexception',['ElibriAPIConnectionException',['../classElibriAPIConnectionException.html',1,'']]],
-  ['elibriforbiddenexception',['ElibriForbiddenException',['../classElibriForbiddenException.html',1,'']]],
-  ['elibriinvalidauthexception',['ElibriInvalidAuthException',['../classElibriInvalidAuthException.html',1,'']]],
-  ['elibrinoserverresponsingexception',['ElibriNoServerResponsingException',['../classElibriNoServerResponsingException.html',1,'']]],
-  ['elibrinotfoundexception',['ElibriNotFoundException',['../classElibriNotFoundException.html',1,'']]],
-  ['elibriparameterserror',['ElibriParametersError',['../classElibriParametersError.html',1,'']]],
-  ['elibrirequestexpiredexception',['ElibriRequestExpiredException',['../classElibriRequestExpiredException.html',1,'']]],
-  ['elibriservererrorexception',['ElibriServerErrorException',['../classElibriServerErrorException.html',1,'']]],
-  ['elibriunknownexception',['ElibriUnknownException',['../classElibriUnknownException.html',1,'']]],
-  ['elibriwatermarkingclient',['ElibriWatermarkingClient',['../classElibriWatermarkingClient.html',1,'']]],
-  ['elibriwrongformatsexception',['ElibriWrongFormatsException',['../classElibriWrongFormatsException.html',1,'']]]
+  ['soon_5favailable_5ffiles_15',['soon_available_files',['../classElibriWatermarkingClient.html#a30683d237fbf5ec5381871c83682d121',1,'ElibriWatermarkingClient']]],
+  ['soon_5funavailable_5ffiles_16',['soon_unavailable_files',['../classElibriWatermarkingClient.html#afafdf8a68bee4c40c4273abd68627d8b',1,'ElibriWatermarkingClient']]]
 ];
