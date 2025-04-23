@@ -140,7 +140,7 @@ class ElibriWatermarkingClient {
       throw new ElibriWrongFormatsException();
     }
 
-    $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark)
+    $data = array($ident_type => $ident, 'formats' => $formats, 'visible_watermark' => $visible_watermark);
 
     if ($client_symbol) {
       $data['client_symbol'] = $client_symbol;
