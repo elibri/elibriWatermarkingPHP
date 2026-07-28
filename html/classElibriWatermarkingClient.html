@@ -66,7 +66,7 @@ $(function() {
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.  
+<p>ElibriAPI abstrahuje wykorzystanie API udostępniane przez eLibri.
  <a href="classElibriWatermarkingClient.html#details">Więcej...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -93,7 +93,7 @@ Metody publiczne</h2></td></tr>
 <tr class="memdesc:a0c799c9eb35b2e42598d01d46e06c638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zlecaj watermarkowanie. Żeby skrócić maksymalnie oczekiwanie klienta na plik, podzieliliśmy cały proces watermarkingu na dwa etapy. Proponujemy, żeby zlecać watermarking tak wcześnie, jak to tylko możliwe (na przykład wtedy, gdy klient opuści koszyk, i poda swoje dane) elibri rozpoczyna wtedy watermarkowanie książki, ale nie udostępnia jeszcze pliku sklepowi, ani nie rejestruje transakcji. Dopiero po dokonaniu płatności przez klienta należy wywołać metodę deliver, która to asynchronicznie dostarczy linki do plik do sklepu.  <a href="classElibriWatermarkingClient.html#a0c799c9eb35b2e42598d01d46e06c638">Więcej...</a><br /></td></tr>
 <tr class="separator:a0c799c9eb35b2e42598d01d46e06c638"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71b2829ff44480bf0bcb368832cd903c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#a71b2829ff44480bf0bcb368832cd903c">deliver</a> ($trans_id)</td></tr>
-<tr class="memdesc:a71b2829ff44480bf0bcb368832cd903c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.  <a href="classElibriWatermarkingClient.html#a71b2829ff44480bf0bcb368832cd903c">Więcej...</a><br /></td></tr>
+<tr class="memdesc:a71b2829ff44480bf0bcb368832cd903c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. <a href="classElibriWatermarkingClient.html#a71b2829ff44480bf0bcb368832cd903c">Więcej...</a><br /></td></tr>
 <tr class="separator:a71b2829ff44480bf0bcb368832cd903c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9a6022fe6ac97609d6726248da806bb"><td class="memItemLeft" align="right" valign="top"><a id="af9a6022fe6ac97609d6726248da806bb"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElibriWatermarkingClient.html#af9a6022fe6ac97609d6726248da806bb">available_files</a> ()</td></tr>
@@ -172,7 +172,7 @@ Metody publiczne</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta. Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu. Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu. </p>
+<p>Dostarcz plik oraz zajestruj transakcję Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta.</p>
 <dl class="params"><dt>Parametry</dt><dd>
   <table class="params">
     <tr><td class="paramtype">String</td><td class="paramname">$trans_id</td><td>- alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark </td></tr>

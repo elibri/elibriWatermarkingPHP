@@ -151,8 +151,6 @@ class ElibriWatermarkingClient {
 
   //! @brief Dostarcz plik oraz zajestruj transakcję
   //! Ta metoda powinna zostać wywołana po watermark. Sklep powinien ją wywołać po zarejestrowaniu płatności przez klienta.
-  //! Zwatermarkowany plik (pliki) zostaną przekopiowane do bucketu na amazon S3, który jest przypisany do sklepu.
-  //! Sklep jest zobowiązany do wykasowania pliku po jego ściągnięciu.
   //! @param String $trans_id - alfanumeryczny identyfikator transakcji zwrócony przez metodę watermark
   function deliver($trans_id) {
     $data = array('trans_id' => $trans_id);
