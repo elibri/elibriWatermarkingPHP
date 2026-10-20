@@ -1,0 +1,42 @@
+{
+    "name": "elibri/watermarking-client",
+    "description": "PHP client for the elibri watermarking and transactional API",
+    "type": "library",
+    "keywords": ["elibri", "watermarking", "ebook", "epub", "mobi", "api-client"],
+    "homepage": "https://github.com/elibri/elibriWatermarkingPHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tomasz Meka",
+            "email": "tomek@elibri.com.pl"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/elibri/elibriWatermarkingPHP/issues",
+        "docs": "https://www.elibri.com.pl/doc/watermarking/"
+    },
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Elibri\\Watermarking\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elibri\\Watermarking\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

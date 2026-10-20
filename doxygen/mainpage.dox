@@ -1,0 +1,99 @@
+/*! \mainpage Biblioteka do obsługi API watermarkingu elibri
+ *
+ * \section intro_sec Wprowadzenie
+ *
+ * <a href='https://www.elibri.com.pl'>elibri</a> jest systemem stworzonym dla wydawnictw,
+ * które mogą za jego pośrednictwem sprzedawać swoje ebooki na swoich stronach internetowych,
+ * jak i na stronach współpracujących firm. Pełna dokumentacja API znajduje się pod adresem
+ * https://www.elibri.com.pl/doc/watermarking/
+ *
+ * \section install_sec Instalacja
+ *
+ * Bibliotekę instalujemy przez <a href='https://getcomposer.org'>Composera</a>:
+ *
+ * \code{.sh}
+ * composer require elibri/watermarking-client
+ * \endcode
+ *
+ * Wymagane jest PHP 7.4 lub nowsze oraz rozszerzenia \b curl i \b json.
+ * Źródła: https://github.com/elibri/elibriWatermarkingPHP
+ *
+ * \section update Aktualizacja do wersji 1.0
+ *
+ * Wersja 1.0 nie jest zgodna wstecz z serią 0.x:
+ *
+ *    * Biblioteka jest instalowana Composerem i ładowana przez PSR-4; nie ma już
+ *      kanału PEAR ani pliku \c elibriWatermarkingPHP.php, który trzeba było
+ *      ręcznie wymagać.
+ *    * Klasy mają przestrzenie nazw: \c ElibriWatermarkingClient to teraz
+ *      \ref Elibri::Watermarking::WatermarkingClient "Elibri\\Watermarking\\WatermarkingClient".
+ *    * Wyjątki przeniesiono do \c Elibri\\Watermarking\\Exception\\ i pozbawiono przedrostka
+ *      \c Elibri. Wszystkie dziedziczą po \c ElibriException.
+ *    * Nazwy metod są w camelCase: \c available_files to \c availableFiles,
+ *      \c soon_available_files to \c soonAvailableFiles, \c soon_unavailable_files
+ *      to \c soonUnavailableFiles.
+ *    * Certyfikaty TLS są weryfikowane, a żądania mają timeout.
+ *
+ * Wcześniej, 18.09.2024, z metody \c watermark zostały usunięte parametry
+ * \c $title_postfix oraz \c $client_id, a metoda \c retry została wycofana.
+ *
+ * \section usage_sec Użycie biblioteki
+ *
+ * Poprzez API zlecasz watermarking książki, podając jej identyfikator (ISBN lub
+ * <a href='https://www.elibri.com.pl/doc/api/onix_record_identifiers'>record reference</a>),
+ * formaty (tablica stałych \ref Elibri::Watermarking::Format "Format" lub lista po przecinku,
+ * na ogół 'epub,mobi') oraz widoczny watermark, który jest umieszczany na końcu każdego rozdziału.
+ *
+ * Link do zwatermarkowanego pliku jest wysyłany razem z pingiem informującym o zakończeniu
+ * transakcji, więcej informacji: https://www.elibri.com.pl/doc/watermarking/ping
+ *
+ * Niezbędne jest podpisanie umów z wydawnictwami, których pliki mają być sprzedawane
+ * za pośrednictwem systemu elibri.
+ *
+ * API watermarkingu jest maksymalnie proste, składa się z dwóch podstawowych wywołań:
+ * \b watermark oraz \b deliver. Metody te są oferowane przez klasę
+ * \ref Elibri::Watermarking::WatermarkingClient "WatermarkingClient".
+ *
+ * \subsection watermark
+ * Sugerujemy, żeby zlecenie watermarkingu książki odbyło się jak najwcześniej, żeby klient
+ * jak najkrócej czekał na dostarczenie pliku. Wysłanie zlecenia watermarkingu nie rejestruje
+ * transakcji w systemie, można więc je wysłać w momencie, kiedy klient opuszcza koszyk
+ * i przechodzi do płacenia. Zwatermarkowany plik jest udostępniany sklepowi dopiero
+ * po wykonaniu metody deliver.
+ *
+ * \subsection deliver
+ * Deliver skutkuje zarejestrowaniem transakcji w systemie oraz dostarczeniem pliku.
+ * Sklep powinien na tym etapie mieć potwierdzenie dokonania płatności, ponieważ wydawnictwo
+ * obarczy go fakturą za dokonaną transakcję.
+ *
+ * Może się zdarzyć, że sklep zleci watermarkowanie, a nie wywoła metody deliver, bo klient
+ * nie dokonał płatności. W takiej sytuacji transakcja zostaje anulowana i żadna ze stron
+ * nie zostanie obciążona. Wywołanie deliver musi nastąpić w ciągu 7 dni od wywołania watermark.
+ *
+ * Po zakończeniu znakowania pliku nasz serwer łączy się z przekazanym przez Państwa URL-em
+ * (metoda POST), przekazując w parametrze trans_id identyfikator transakcji, która została
+ * ukończona. W pingu zwrotnym umieszczany jest również link do pliku, który mogą Państwo
+ * udostępnić klientom.
+ *
+ * \section av_files Lista dostępnych produktów
+ * Można również pobrać listę dostępnych plików dla założonego klienta (uwzględnia ona
+ * przypisanych wydawców oraz daty premier). Uwzględnia również książki, dla których wgrane
+ * są wszystkie pliki, ale nie nastąpiła jeszcze premiera - wtedy ustawione jest pole
+ * \c available_date. Służy do tego metoda
+ * \ref Elibri::Watermarking::WatermarkingClient::availableFiles "WatermarkingClient::availableFiles".
+ *
+ * \section errors Obsługa błędów
+ * Każdy wyjątek rzucany przez bibliotekę dziedziczy po
+ * \ref Elibri::Watermarking::Exception::ElibriException "ElibriException", wystarczy więc
+ * przechwycić tę jedną klasę.
+ *
+ * \section Przykłady
+ *
+ * \subsection example1 Zlecenie watermarkingu
+ *
+ * \include watermarking_example.php
+ *
+ * \subsection example2 Lista dostępnych plików
+ *
+ * \include available_files_example.php
+ */

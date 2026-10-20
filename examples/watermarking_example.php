@@ -1,25 +1,36 @@
 <?php
 
+declare(strict_types=1);
 
-$book_rr = "2a0ec1239e285ec46b11";
+use Elibri\Watermarking\Exception\ElibriException;
+use Elibri\Watermarking\Format;
+use Elibri\Watermarking\WatermarkingClient;
 
-//dostępy do API eLibri
-$key = "061df0c87cd0472a5e4e5708fd788246";
-$secret = "fbef4d3bbb30cbf502bbdb0f8ede3fc7";
+require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once(dirname(__FILE__) . '/../elibriWatermarkingPHP.php');
+// Dostępy do API elibri.
+$token = '061df0c87cd0472a5e4e5708fd788246';
+$secret = 'fbef4d3bbb30cbf502bbdb0f8ede3fc7';
 
-print "1\n";
-$client = new ElibriWatermarkingClient($key, $secret);
+$bookRecordReference = '2a0ec1239e285ec46b11';
 
-print "2\n";
-//zleć watermarkowanie
-$transid = $client->watermark($book_rr, "mobi,epub", "Książka dla Wojtka Kowalskiego");
-print "transid: $transid\n";
+$client = new WatermarkingClient($token, $secret);
 
-//potwierdzaj transakcję
-print $client->deliver($transid);
+try {
+    // Zleć watermarkowanie - jak najwcześniej, np. gdy klient opuszcza koszyk.
+    $transId = $client->watermark(
+        $bookRecordReference,
+        [Format::EPUB, Format::MOBI],
+        'Książka dla Wojtka Kowalskiego'
+    );
+    echo "transid: $transId\n";
 
-//czekaj na callback od elibri na zdefiniowany adres, w callbacku znajdziesz linki do zwatermarkowanych plików
+    // Potwierdź transakcję - dopiero po zarejestrowaniu płatności.
+    echo $client->deliver($transId), "\n";
 
-?>
+    // Teraz czekaj na callback od elibri na zdefiniowany adres;
+    // w callbacku znajdziesz linki do zwatermarkowanych plików.
+} catch (ElibriException $e) {
+    fwrite(STDERR, 'Błąd API elibri: ' . $e->getMessage() . "\n");
+    exit(1);
+}
